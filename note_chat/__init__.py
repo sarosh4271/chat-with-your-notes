@@ -1,2 +1,1 @@
-"""Core package for the Chat with Your Notes demo."""
-
+"""Core package for Chat with Your Notes."""

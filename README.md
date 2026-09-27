@@ -2,9 +2,9 @@
 
 A local-first retrieval-augmented generation (RAG) app. Upload PDFs, Markdown, or text files and ask questions whose answers are grounded in the uploaded material.
 
-The vector database is local and in memory. The app still sends document text to the OpenAI Embeddings API and sends retrieved excerpts to the OpenAI chat model, so it is **not an offline or fully local AI app**.
+The vector database is local and in memory. The app still sends document text to the OpenAI Embeddings API and sends retrieved excerpts to the OpenAI chat model, so it is **not fully offline or local**.
 
-## What this project demonstrates
+## Features
 
 - Document ingestion with LangChain's `PyPDFLoader`
 - Chunking with `RecursiveCharacterTextSplitter`
@@ -13,7 +13,7 @@ The vector database is local and in memory. The app still sends document text to
 - Grounded answers, refusal behavior, and visible source excerpts
 - Stateful chat and document indexing in Streamlit
 - Prompt-injection resistance: retrieved text is explicitly treated as data, not instructions
-- Public-demo safeguards for upload size, page count, prompt length, output length, retries, and per-session usage
+- Hosted-app safeguards for upload size, page count, prompt length, output length, retries, and per-session usage
 
 ## Architecture
 
@@ -58,13 +58,13 @@ Yes, this project can be shared through a public `streamlit.app` URL:
 1. Create a new GitHub repository and push this project to it.
 2. Open [Streamlit Community Cloud](https://share.streamlit.io), choose **Create app**, select the repository, and set `app.py` as the entrypoint.
 3. In **Advanced settings**, select Python 3.12. Do **not** configure an OpenAI secret for the hosted app.
-4. Deploy, test by entering your own API key in the password field, and add the resulting URL to your GitHub README and portfolio.
+4. Deploy and test by entering your own API key in the password field.
 
-The public demo uses a **bring-your-own-key** model. Every visitor supplies their own OpenAI API key and pays for their own API usage. The app keeps the value in the current Streamlit session and passes it directly to the LangChain OpenAI clients; this code does not write it to disk, logs, environment variables, URLs, or browser storage.
+The hosted app uses a **bring-your-own-key** model. Every visitor supplies their own OpenAI API key and pays for their own API usage. The app keeps the value in the current Streamlit session and passes it directly to the LangChain OpenAI clients; this code does not write it to disk, logs, environment variables, URLs, or browser storage.
 
 However, a hosted Streamlit application is still server-side software: the key passes through the machine running the app and exists in that process's memory while requests run. Visitors should only enter a short-lived, project-scoped key into a deployment they trust. Running a clone locally with `.env` provides the strongest trust boundary.
 
-### Public-demo limits
+### Hosted-app limits
 
 The app currently enforces:
 
@@ -101,19 +101,3 @@ RAG reduces hallucinations but cannot guarantee factual answers. Retrieval can m
 - Image-only/scanned PDFs are detected when no readable text is extracted and require OCR before upload.
 - Complex tables, diagrams, handwriting, and multi-column layouts may not extract perfectly with `PyPDFLoader`.
 - Ordinary questions, extraction, comparison, and passage-level summaries work through retrieval. A reliable summary of an entire long document needs a separate map-reduce summarization pipeline; the prompt deliberately avoids claiming full coverage when only retrieved excerpts are available.
-
-## Portfolio talking points
-
-- Why chunk size and overlap affect recall, cost, and answer quality
-- Why “Chroma is local” does not mean the whole pipeline is private
-- How chat-history rewriting improves follow-up questions such as “What happened next?”
-- Why displaying retrieved evidence is more trustworthy than returning an answer alone
-- How you would evaluate it with a small question/answer dataset using retrieval recall and answer faithfulness
-
-## Suggested next iterations
-
-1. Add a RAG evaluation set and automated quality report.
-2. Add scanned-PDF OCR (the current version detects image-only PDFs and explains the limitation).
-3. Persist Chroma collections per user and deduplicate chunks by content hash.
-4. Add hybrid keyword + vector retrieval and reranking.
-5. Add authentication and a persistent, server-side rate limiter for a broadly promoted demo.

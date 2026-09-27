@@ -125,7 +125,7 @@ def ask(session: RagSession, question: str, chat_history: list[BaseMessage]) -> 
         raise ValueError("Enter a question.")
     if len(question) > MAX_QUESTION_CHARS:
         raise ValueError(
-            f"Questions are limited to {MAX_QUESTION_CHARS:,} characters in the public demo."
+            f"Questions are limited to {MAX_QUESTION_CHARS:,} characters."
         )
     return session.chain.invoke({"input": question, "chat_history": chat_history})
 

@@ -99,7 +99,7 @@ with st.sidebar:
         "Chroma runs in memory on this server. Document text is sent to OpenAI to create "
         "embeddings, and retrieved excerpts are sent to the chat model."
     )
-    with st.expander("Public demo limits"):
+    with st.expander("Usage limits"):
         st.markdown(
             f"- {MAX_FILES} files per index\n"
             f"- {MAX_FILE_BYTES // (1024 * 1024)} MB per file; "
@@ -197,7 +197,7 @@ if question:
 if st.session_state.rag_session is None:
     st.info("Add your API key, upload at least one document, and click **Index documents**.")
 elif st.session_state.questions_asked >= MAX_QUESTIONS_PER_SESSION:
-    st.warning("This demo session has reached its question limit. Start a new session to continue.")
+    st.warning("This session has reached its question limit. Start a new session to continue.")
 
 if st.session_state.indexes_built >= MAX_INDEXES_PER_SESSION:
     st.sidebar.warning("This session has reached its document-indexing limit.")

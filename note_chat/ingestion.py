@@ -54,7 +54,7 @@ def _load_pdf(filename: str, content: bytes) -> list[Document]:
         page_count = len(PdfReader(temporary_path).pages)
         if page_count > MAX_PDF_PAGES:
             raise ValueError(
-                f"{filename} has {page_count} pages; the public demo limit is "
+                f"{filename} has {page_count} pages; the hosted-app limit is "
                 f"{MAX_PDF_PAGES}."
             )
 
@@ -118,7 +118,7 @@ def load_uploaded_files(files: Iterable[UploadedFile]) -> list[Document]:
     character_count = sum(len(document.page_content) for document in readable_documents)
     if character_count > MAX_DOCUMENT_CHARS:
         raise ValueError(
-            "The extracted text is too large for this public demo "
+            "The extracted text is too large for the hosted app "
             f"({character_count:,} characters; limit {MAX_DOCUMENT_CHARS:,})."
         )
     return readable_documents
@@ -141,7 +141,7 @@ def split_documents(
         raise ValueError("No searchable text chunks could be created.")
     if len(chunks) > MAX_CHUNKS:
         raise ValueError(
-            f"These documents create {len(chunks)} chunks; the public demo limit is "
+            f"These documents create {len(chunks)} chunks; the hosted-app limit is "
             f"{MAX_CHUNKS}. Upload a smaller document set or increase chunk size."
         )
     return chunks
