@@ -30,7 +30,7 @@ class RagSession:
 def build_rag_session(
     chunks: list[Document],
     api_key: str,
-    chat_model: str = "gpt-5-mini",
+    chat_model: str = "gpt-4.1-mini",
     top_k: int = 6,
 ) -> RagSession:
     """Embed chunks in an ephemeral Chroma collection and assemble the chain."""

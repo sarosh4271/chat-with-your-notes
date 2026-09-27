@@ -9,6 +9,15 @@ from pathlib import Path
 import streamlit as st
 from dotenv import load_dotenv
 from langchain_core.messages import AIMessage, HumanMessage
+from openai import (
+    APIConnectionError,
+    APITimeoutError,
+    AuthenticationError,
+    BadRequestError,
+    NotFoundError,
+    PermissionDeniedError,
+    RateLimitError,
+)
 
 from note_chat.ingestion import (
     MAX_FILE_BYTES,
@@ -31,6 +40,31 @@ st.caption("Upload PDFs or text notes, then ask questions about those files.")
 MAX_QUESTIONS_PER_SESSION = 20
 MAX_INDEXES_PER_SESSION = 3
 MAX_HISTORY_MESSAGES = 12
+CHAT_MODELS = ("gpt-4.1-mini", "gpt-5-mini", "gpt-4o-mini")
+
+
+def answer_error_message(error: Exception) -> str:
+    """Return an actionable message without exposing request internals."""
+    if isinstance(error, AuthenticationError):
+        return "OpenAI rejected the API key. Check the key and try again."
+    if isinstance(error, (PermissionDeniedError, NotFoundError)):
+        return (
+            "This API key cannot use the selected chat model. Choose another model, "
+            "index the documents again, and retry."
+        )
+    if isinstance(error, RateLimitError):
+        return (
+            "The OpenAI account reached a rate, usage, or billing limit. Check the "
+            "account limits and available credits, then retry."
+        )
+    if isinstance(error, BadRequestError):
+        return (
+            "The selected model rejected the answer request. Choose another model, "
+            "index the documents again, and retry."
+        )
+    if isinstance(error, (APITimeoutError, APIConnectionError)):
+        return "The connection to OpenAI timed out. Please retry in a moment."
+    return "The answer request failed. Check the Streamlit application logs for details."
 
 
 def reset_chat() -> None:
@@ -76,7 +110,16 @@ with st.sidebar:
         "Bring your own key. On a hosted copy, the key passes through that app's server, "
         "so only use deployments you trust. For maximum privacy, clone and run locally."
     )
-    model = os.getenv("OPENAI_CHAT_MODEL", "gpt-5-mini")
+    configured_model = os.getenv("OPENAI_CHAT_MODEL", "gpt-4.1-mini")
+    model_options = list(CHAT_MODELS)
+    if configured_model not in model_options:
+        model_options.insert(0, configured_model)
+    model = st.selectbox(
+        "Chat model",
+        model_options,
+        index=model_options.index(configured_model),
+        help="If your key cannot access one model, select another and index again.",
+    )
     chunk_size = st.slider("Chunk size", 400, 2_000, 1_000, 100)
     chunk_overlap = st.slider("Chunk overlap", 0, 400, 200, 50)
 
@@ -190,9 +233,9 @@ if question:
             st.session_state.questions_asked += 1
         except ValueError as error:
             st.error(f"Could not answer the question: {error}")
-        except Exception:
+        except Exception as error:
             logger.exception("Question answering failed")
-            st.error("The answer request failed. Please retry in a moment.")
+            st.error(answer_error_message(error))
 
 if st.session_state.rag_session is None:
     st.info("Add your API key, upload at least one document, and click **Index documents**.")

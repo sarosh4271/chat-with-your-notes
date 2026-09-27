@@ -60,7 +60,7 @@ Yes, this project can be shared through a public `streamlit.app` URL:
 3. In **Advanced settings**, select Python 3.12. Do **not** configure an OpenAI secret for the hosted app.
 4. Deploy and test by entering your own API key in the password field.
 
-The hosted app uses a **bring-your-own-key** model. Every visitor supplies their own OpenAI API key and pays for their own API usage. The app keeps the value in the current Streamlit session and passes it directly to the LangChain OpenAI clients; this code does not write it to disk, logs, environment variables, URLs, or browser storage.
+The hosted app uses a **bring-your-own-key** model. Every visitor supplies their own OpenAI API key and pays for their own API usage. The app keeps the value in the current Streamlit session and passes it directly to the LangChain OpenAI clients; this code does not write it to disk, logs, environment variables, URLs, or browser storage. Visitors can select `gpt-4.1-mini`, `gpt-5-mini`, or `gpt-4o-mini` based on the models available to their OpenAI account.
 
 However, a hosted Streamlit application is still server-side software: the key passes through the machine running the app and exists in that process's memory while requests run. Visitors should only enter a short-lived, project-scoped key into a deployment they trust. Running a clone locally with `.env` provides the strongest trust boundary.
 
