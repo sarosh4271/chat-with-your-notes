@@ -1,0 +1,10 @@
+streamlit==1.64.0
+langchain==1.4.2
+langchain-classic==1.0.8
+langchain-community==0.4.2
+langchain-openai==1.6.6
+langchain-chroma==1.1.0
+langchain-text-splitters==1.1.2
+chromadb==1.5.9
+pypdf==6.19.0
+python-dotenv==1.2.3
